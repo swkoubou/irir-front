@@ -3,16 +3,16 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router';
 
 import App from '@pages/App';
-import Play from '@pages/play/Play';
 import Rank from '@pages/rank/Rank';
+import Irir from '@pages/irir/Irir';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />} />
-        <Route path="/play" element={<Play />} />
         <Route path="/rank" element={<Rank />} />
+        <Route path="/irir" element={<Irir />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>
