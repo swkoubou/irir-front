@@ -1,11 +1,5 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-<<<<<<< HEAD
-import Rain from "./components/a";
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-      <Rain/>
-=======
 import { BrowserRouter, Routes, Route } from 'react-router';
 
 import App from '@pages/App';
@@ -21,6 +15,5 @@ createRoot(document.getElementById('root')).render(
         <Route path="/irir" element={<Irir />} />
       </Routes>
     </BrowserRouter>
->>>>>>> 8e5f18219f5b17fa50fd87ac2969badff8c3e922
   </StrictMode>
 );
