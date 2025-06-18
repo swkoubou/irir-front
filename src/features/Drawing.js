@@ -32,6 +32,10 @@ export const drawing = ({ ctx, object, objectImages, switchingImageTiming = 6 })
   if (!ctx || !object || !objectImages || objectImages.length === 0) return;
 
   const drawOne = (obj) => {
+    if (obj.alive === false) {
+      ctx.clearRect(obj.x, obj.y, obj.width, obj.height);
+      return;
+    }
     if (!obj || obj.frameIndex == null) return;
 
     const img = objectImages[obj.frameIndex];

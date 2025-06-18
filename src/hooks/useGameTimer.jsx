@@ -9,21 +9,21 @@ export const useGameTimer = ({ setGameTime, setGameState, spawnEnemy, spawnBoss 
       setGameTime((time) => {
         // # 0.01 秒単位で刻むぜ！
         const newTime = time + 1;
-        if (newTime % 500 === 0) {
+        if (newTime % 50 === 0) {
           // # 5秒 ごとに雑魚敵が出現する
           spawnEnemy();
         }
-        if (newTime === 40000) {
+        if (newTime === 4000) {
           // # 40秒 たつとボスが出現する
           spawnBoss();
         }
-        if (newTime === 60000) {
+        if (newTime === 6000) {
           // # 60秒たつとゲームオーバーになる
-          setGameState('GAMEOVER');
+          setGameState(false);
         }
         return newTime;
       });
-    }, 10);
+    }, 100);
 
     return () => clearInterval(timer);
   }, [setGameState, setGameTime, spawnBoss, spawnEnemy]);

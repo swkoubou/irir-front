@@ -11,11 +11,12 @@ import { drawing } from '@features/Drawing';
 
 // # "assets" からインポート
 import styles from '@scss/App.module.scss';
-import backgroundImg from '@assets/backgroundImg.png';
+import backgroundImg from '@assets/imgs/backgroundImage.png';
 
 // # カスタムフックのインポート
 import { useGameTimer } from '@hooks/useGameTimer';
 import { usePlayerActionObserver } from '../hooks/usePlayerActionObserver';
+import { drawBullet } from '../features/Bullet';
 
 function App() {
   const canvasRef = useRef(null);
@@ -48,6 +49,11 @@ function App() {
     }
   };
 
+  // # ボスオブジェクトを "bossRef" に追加
+  const spawnBoss = () => {
+    bossRef.current = createBoss(canvasRef.current.width);
+  };
+
   useEffect(() => {
     (async () => {
       const [pf, ef, bf, blf] = await Promise.all([
@@ -64,11 +70,6 @@ function App() {
     })();
   }, []);
 
-  // # ボスオブジェクトを "bossRef" に追加
-  const spawnBoss = () => {
-    bossRef.current = createBoss(canvasRef.current.width);
-  };
-
   // # ゲームタイマーを生成し、時間ごとに決められた処理を行う
   useGameTimer({
     setGameTime,
@@ -80,7 +81,7 @@ function App() {
   // # ユーザーのキー入力を検知し、プレイヤーのアクション処理を行う
   usePlayerActionObserver({
     player: playerRef.current,
-    bullet: bulletRefs.current,
+    bullet: bulletRefs,
     createBullet,
     updatePlayer,
     CANVAS_WIDTH: window.innerWidth,
@@ -104,12 +105,15 @@ function App() {
   // # ゲームループ処理
   useEffect(() => {
     if (!gameState || !ready) return;
-    gameLoopRef.current = setInterval(() => {
+
+    const loop = () => {
       updateGame();
       drawGame();
-    }, 1000 / 60);
+      gameLoopRef.current = requestAnimationFrame(loop);
+    };
 
-    return () => clearInterval(gameLoopRef.current);
+    gameLoopRef.current = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(gameLoopRef.current);
   }, [gameState, ready]);
 
   const updateGame = () => {
@@ -137,17 +141,23 @@ function App() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     drawing({ ctx, object: playerRef.current, objectImages: playerImages });
-    drawing({ ctx, object: bulletRefs.current, objectImages: bulletFrames });
+    drawBullet({ ctx, object: bulletRefs.current });
+    // drawing({ ctx, object: bulletRefs.current, objectImages: bulletFrames });
     drawing({ ctx, object: enemyRefs.current, objectImages: enemyFrames });
     drawing({ ctx, object: bossRef.current, objectImages: bossFrames });
   };
 
   return (
     <div className={styles['display']}>
+      <img className={styles['display-background']} src={backgroundImg} />
       <h1 className={styles['display-score']}>Score: {score}</h1>
-      <h2 className={styles['display-time']}>Time: {gameTime / 100}s</h2>
-      {/* <img className={styles['display-background']} src={backgroundImg} /> */}
-      <canvas ref={canvasRef} width={window.innerWidth} height={window.innerHeight} className="border border-black" />
+      <h2 className={styles['display-time']}>Time: {(gameTime / 10).toFixed(1)}s</h2>
+      <canvas
+        ref={canvasRef}
+        width={window.innerWidth}
+        height={window.innerHeight}
+        className={styles['display-canvas']}
+      />
       {!gameState && <div className="">GAME OVER</div>}
     </div>
   );
