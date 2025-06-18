@@ -1,0 +1,61 @@
+* {
+  outline: solid 1px magenta;
+}
+
+html,
+body {
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  user-select: none;
+}
+
+.game-area-container {
+  margin: auto;
+  width: 100%;
+  height: 100%;
+}
+
+.game-area {
+  $lineNumber: 3;
+
+  width: 100%;
+  height: 100%;
+
+  &-lines-container {
+    border-top: {
+      left-radius: 20px;
+      right-radius: 20px;
+    }
+    width: 100%;
+    height: 80%;
+    display: flex;
+  }
+  &-line {
+    height: 100%;
+    width: calc(100% / $lineNumber);
+  }
+
+  &-tap-line {
+  }
+
+  &-active-note {
+  }
+
+  &-touch-indicators-container {
+    display: flex;
+    width: 100%;
+    height: 20%;
+  }
+  &-touch-indicator {
+    width: calc(100% / $lineNumber);
+    height: 100%;
+    background-color: red;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 50px;
+  }
+}
