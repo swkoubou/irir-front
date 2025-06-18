@@ -28,7 +28,7 @@ const updateBossCollisionDetection = ({ bullets, bossRef, setScore, setGameState
       if (boss.hp <= 0) {
         boss.alive = false;
         setScore((s) => s + 1000);
-        setGameState('GAMEOVER');
+        setGameState(false);
       }
     }
   });

@@ -1,36 +1,60 @@
-import React, { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 /**
- * #### プレイヤーのキー入力（左右の動き、弾丸の発射（※デバッグ用））を監視し、状態に応じて処理を行うカスタムフック
- *  */
+ * #### プレイヤーのキー入力（左右移動・弾発射）を監視し、状態に応じて処理を行うカスタムフック
+ */
 export const usePlayerActionObserver = ({ gameState, player, bullet, CANVAS_WIDTH, createBullet, updatePlayer }) => {
-  useEffect(() => {
-    if (gameState !== 'PLAYING') return;
+  const keyState = useRef({ left: false, right: false });
 
-    const handleKeyPress = (e) => {
-      switch (e.key.toLowerCase()) {
-        case 'arrowleft':
-        case 'a':
-          updatePlayer(player, 'left', CANVAS_WIDTH);
-          e.preventDefault();
-          break;
-        case 'arrowright':
-        case 'd':
-          updatePlayer(player, 'right', CANVAS_WIDTH);
-          e.preventDefault();
-          break;
-        case 'p': // # 確認用の弾丸発射ボタン
-          bullet.current.push(createBullet(player));
-          e.preventDefault();
-          break;
-        default:
-          break;
+  useEffect(() => {
+    if (!gameState) return;
+
+    const handleKeyDown = (e) => {
+      const key = e.key.toLowerCase();
+
+      if (key === 'arrowleft' || key === 'a') {
+        keyState.current.left = true;
+        e.preventDefault();
+      }
+      if (key === 'arrowright' || key === 'd') {
+        keyState.current.right = true;
+        e.preventDefault();
+      }
+      if (key === 'p') {
+        bullet.current.push(createBullet(player));
+        e.preventDefault();
       }
     };
 
-    // # プレイヤーのキー操作を監視
-    window.addEventListener('keydown', handleKeyPress);
+    const handleKeyUp = (e) => {
+      const key = e.key.toLowerCase();
 
-    return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [gameState]); // ! "PLAYING" に変更されたときのみ実行されるようにしています
+      if (key === 'arrowleft' || key === 'a') {
+        keyState.current.left = false;
+      }
+      if (key === 'arrowright' || key === 'd') {
+        keyState.current.right = false;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown, { passive: false });
+    window.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [gameState]);
+
+  // # プレイヤーの移動を連続的に処理（60FPS）
+  useEffect(() => {
+    if (!gameState) return;
+
+    const interval = setInterval(() => {
+      if (keyState.current.left) updatePlayer(player, 'left', CANVAS_WIDTH);
+      if (keyState.current.right) updatePlayer(player, 'right', CANVAS_WIDTH);
+    }, 1000 / 60); // 60fps
+
+    return () => clearInterval(interval);
+  }, [gameState]);
 };
