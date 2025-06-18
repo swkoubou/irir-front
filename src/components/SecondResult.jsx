@@ -29,7 +29,7 @@ const SecondResult = ({ time = 45, onRestart }) => {
         <h1 style={{ fontSize: '2rem', fontWeight: 'bold' }}>🎉 ゲームクリア！</h1>
         <p style={{ fontSize: '1.25rem', marginBottom: '1.5rem' }}>タイム: {time} 秒</p>
         <button
-          onClick={onHome}
+          onClick={onRestart}
           style={{
             backgroundColor: '#3b82f6',
             color: 'white',
@@ -43,7 +43,7 @@ const SecondResult = ({ time = 45, onRestart }) => {
           ホーム画面へ
         </button>
         <button
-          onClick={onRanking}
+          onClick={onRestart}
           style={{
             backgroundColor: '#3b82f6',
             color: 'white',
