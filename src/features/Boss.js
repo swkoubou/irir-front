@@ -6,6 +6,8 @@ const createBoss = (canvasWidth) => {
     height: 528,
     hp: 20,
     alive: true,
+    frameIndex: 0,
+    frameCount: 0,
   };
 };
 
@@ -32,12 +34,4 @@ const updateBossCollisionDetection = ({ bullets, bossRef, setScore, setGameState
   });
 };
 
-// todo: アニメーションsvgに対応できるように調整
-const drawBoss = (ctx, boss, bossImg) => {
-  if (boss?.alive && bossImg.complete) {
-    ctx.drawImage(bossImg, boss.x, boss.y, boss.width, boss.height);
-    console.log('done draw boss!!');
-  }
-};
-
-export { createBoss, updateBossCollisionDetection, drawBoss };
+export { createBoss, updateBossCollisionDetection };

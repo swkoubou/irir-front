@@ -17,19 +17,4 @@ const updateBullets = (bullets) => {
   });
 };
 
-// todo: アニメーションsvgに対応できるように調整
-const drawBullets = (ctx, bullets, bulletFrames, switchFrame) => {
-  const nowFrame = bulletFrames[bullets.frameIndex];
-  bullets.forEach((b) => {
-    if (nowFrame.complete) {
-      ctx.drawImage(nowFrame, b.x, b.y, b.width, b.height);
-    }
-
-    bullets.frameCount++;
-    if (bullets.frameCount % switchFrame === 0) {
-      bullets.frameIndex = (bullets.frameIndex + 1) % bulletFrames.length;
-    }
-  });
-};
-
-export { createBullet, updateBullets, drawBullets };
+export { createBullet, updateBullets };

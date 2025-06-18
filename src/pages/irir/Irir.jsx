@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '@/firebase';
+import { Navigate } from 'react-router';
 
 const Irir = () => {
   //初期値を設定している
@@ -32,7 +33,8 @@ const Irir = () => {
         createdAt: new Date(),
       });
       console.log('保存成功');
-      navigate('/rank', { state: { name: name, time: seconds } }); //画面移行（プルリクエスト後に変更）とdbにデータを入れている
+
+      Navigate('/rank', { state: { name: name, time: seconds } }); //画面移行（プルリクエスト後に変更）とdbにデータを入れている
     } catch (e) {
       console.error('エラー: ', e);
       setError('データの保存中にエラーが発生しました。');
@@ -52,11 +54,7 @@ const Irir = () => {
       }}
     >
       <h1 style={{ fontSize: '32px', marginBottom: '20px' }}>クリアタイム</h1>
-
-      <div style={{ fontSize: '24px', marginBottom: '30px' }}>
-        タイム: {formatTime(seconds)}
-      </div>
-
+      <div style={{ fontSize: '24px', marginBottom: '30px' }}>タイム: {formatTime(seconds)}</div>
       <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
         <input
           type="text"

@@ -14,6 +14,8 @@ const createEnemy = (canvasWidth, canvasHeight) => {
     width: 64,
     height: 64,
     alive: true,
+    frameIndex: 0,
+    frameCount: 0,
   };
 };
 
@@ -37,14 +39,4 @@ const updateEnemyCollisionDetection = ({ bullets, enemies, setScore }) => {
   });
 };
 
-// todo: アニメーションsvgに対応できるように調整
-const drawEnemies = (ctx, enemies, enemyImg) => {
-  enemies.forEach((enemy) => {
-    if (enemy.alive && enemyImg.complete) {
-      ctx.drawImage(enemyImg, enemy.x, enemy.y, enemy.width, enemy.height);
-      console.log('done draw enemy!!');
-    }
-  });
-};
-
-export { createEnemy, updateEnemyCollisionDetection, drawEnemies };
+export { createEnemy, updateEnemyCollisionDetection };
