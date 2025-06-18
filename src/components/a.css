@@ -1,7 +1,7 @@
 .rain-back {
   width: 100vw;
   height: 100vh;
-  background: linear-gradient(to bottom, #1e1e63, #428090);
+  background: linear-gradient(to bottom, #0a0a30, #a4a5a5);
   position: relative;
   overflow: hidden;
 }
@@ -11,7 +11,7 @@
   top: -10px;
   width: 3px;
   height: 12px;
-  background: hsl(217, 36%, 69%);
+  background: hsl(217, 87%, 3%);
   opacity: 0.8;
   animation: fall 3s linear forwards;
 }
