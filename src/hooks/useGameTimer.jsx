@@ -13,11 +13,11 @@ export const useGameTimer = ({ setGameTime, setGameState, spawnEnemy, spawnBoss 
           // # 5秒 ごとに雑魚敵が出現する
           spawnEnemy();
         }
-        if (newTime === 4000) {
+        if (newTime === 400) {
           // # 40秒 たつとボスが出現する
           spawnBoss();
         }
-        if (newTime === 6000) {
+        if (newTime === 600) {
           // # 60秒たつとゲームオーバーになる
           setGameState(false);
         }

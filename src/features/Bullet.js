@@ -2,8 +2,8 @@ const createBullet = (player) => {
   return {
     x: player.x + player.width / 2 - 5,
     y: player.y,
-    width: 16,
-    height: 16,
+    width: 8,
+    height: 8,
     speed: 10,
     frameIndex: 0,
     frameCount: 0,

@@ -13,14 +13,25 @@ body {
 
 .display {
   position: relative;
-  &-background {
-    position: absolute;
-  }
+  width: 100vw;
+  height: 100vh;
   &-canvas {
     position: absolute;
   }
   &-time {
     position: absolute;
     color: white;
+  }
+  &-score {
+    position: absolute;
+    color: white;
+  }
+  &-gameover {
+    position: absolute;
+    color: white;
+    font-size: 50px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 }

@@ -3,8 +3,9 @@ import { useEffect, useRef } from 'react';
 /**
  * #### プレイヤーのキー入力（左右移動・弾発射）を監視し、状態に応じて処理を行うカスタムフック
  */
-export const usePlayerActionObserver = ({ gameState, player, bullet, CANVAS_WIDTH, createBullet, updatePlayer }) => {
+export const usePlayerActionObserver = ({ gameState, playerRef, bullet, CANVAS_WIDTH, createBullet, updatePlayer }) => {
   const keyState = useRef({ left: false, right: false });
+  const player = playerRef.current;
 
   useEffect(() => {
     if (!gameState) return;
