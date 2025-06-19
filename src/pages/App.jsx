@@ -1,25 +1,25 @@
 // # React 関連のインポート
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from "react";
 
 // # 自作モジュールのインポート
-import { createPlayer, updatePlayer } from '@features/Player';
-import { createEnemy, updateEnemyCollisionDetection } from '@features/Enemy';
-import { createBullet, updateBullets } from '@features/Bullet';
-import { createBoss, updateBossCollisionDetection } from '@features/Boss';
-import { imagesLoader } from '@features/imagesLoader';
-import { drawing } from '@features/Drawing';
+import { createPlayer, updatePlayer } from "@features/Player";
+import { createEnemy, updateEnemyCollisionDetection } from "@features/Enemy";
+import { createBullet, updateBullets } from "@features/Bullet";
+import { createBoss, updateBossCollisionDetection } from "@features/Boss";
+import { imagesLoader } from "@features/imagesLoader";
+import { drawing } from "@features/Drawing";
 
 // # "assets" からインポート
-import styles from '@scss/App.module.scss';
-import backgroundImg from '@assets/imgs/backgroundImage.png';
+import styles from "@scss/App.module.scss";
+import backgroundImg from "@assets/imgs/backgroundImage.png";
 
 // # カスタムフックのインポート
-import { useGameTimer } from '@hooks/useGameTimer';
-import { usePlayerActionObserver } from '../hooks/usePlayerActionObserver';
-import { drawBullet } from '../features/Bullet';
+import { useGameTimer } from "@hooks/useGameTimer";
+import { usePlayerActionObserver } from "../hooks/usePlayerActionObserver";
+import { drawBullet } from "../features/Bullet";
 
 // # ドックン用コンポーネントをインポート
-import HeartDockn from '../components/HeartDockn';
+import HeartDockn from "../components/HeartDockn";
 
 function App() {
   const canvasRef = useRef(null);
@@ -29,12 +29,14 @@ function App() {
   const [score, setScore] = useState(0);
   const [gameTime, setGameTime] = useState(0.0);
   const [ready, setReady] = useState(false);
+  const [lives, setLives] = useState(3); // ライフ3つ
 
   const [playerImages, setPlayerImages] = useState([]);
   const [enemyFrames, setEnemyFrames] = useState([]);
   const [bossFrames, setBossFrames] = useState([]);
   const [bulletFrames, setBulletFrames] = useState([]);
   const [bgImage, setBgImage] = useState(null);
+  const [bgY, setBgY] = useState(0);
 
   const [canvasWidth, setCanvasWidth] = useState(window.innerWidth);
   const [canvasHeight, setCanvasHeight] = useState(window.innerHeight);
@@ -61,17 +63,21 @@ function App() {
     img.src = backgroundImg;
     img.onload = () => setBgImage(img);
     (async () => {
-      const [pf, ef, bf, blf] = await Promise.all([
-        imagesLoader('player/heartmove', 7),
-        imagesLoader('player/heartmove', 7),
-        imagesLoader('player/heartmove', 7),
-        imagesLoader('player/heartmove', 7),
-      ]);
-      setPlayerImages(pf);
-      setEnemyFrames(ef);
-      setBossFrames(bf);
-      setBulletFrames(blf);
-      setReady(true);
+      try {
+        const [pf, ef, bf, blf] = await Promise.all([
+          imagesLoader("player/heartmove", 7),
+          imagesLoader("enemy/kasakurage", 2),
+          imagesLoader("boss/boss", 7),
+          imagesLoader("player/heartmove", 7),
+        ]);
+        setPlayerImages(pf);
+        setEnemyFrames(ef);
+        setBossFrames(bf);
+        setBulletFrames(blf);
+        setReady(true);
+      } catch (e) {
+        console.error("画像の読み込みに失敗しました", e);
+      }
     })();
   }, []);
 
@@ -93,11 +99,21 @@ function App() {
 
   useEffect(() => {
     const resizeSetCanvas = () => {
-      setCanvasWidth(window.innerWidth);
-      setCanvasHeight(window.innerHeight);
+      const newWidth = window.innerWidth;
+      const newHeight = window.innerHeight;
+
+      setCanvasWidth(newWidth);
+      setCanvasHeight(newHeight);
+
+      // ★ 右ハミ出し補正
+      const player = playerRef.current;
+      if (player.x + player.width > newWidth) {
+        player.x = newWidth - player.width;
+      }
     };
-    window.addEventListener('resize', resizeSetCanvas);
-    return () => window.removeEventListener('resize', resizeSetCanvas);
+
+    window.addEventListener("resize", resizeSetCanvas);
+    return () => window.removeEventListener("resize", resizeSetCanvas);
   }, []);
 
   useEffect(() => {
@@ -159,10 +175,14 @@ function App() {
 
     enemyBulletsRefs.current = updateEnemyBullets(enemyBulletsRefs.current);
     checkPlayerHit();
+
+    setBgY((prevY) => (prevY + 2) % canvasHeight); // 毎フレーム +2px、ループ
   };
 
   const updateEnemyBullets = (bullets) => {
-    return bullets.map((b) => ({ ...b, y: b.y + b.speed })).filter((b) => b.y < canvasHeight);
+    return bullets
+      .map((b) => ({ ...b, y: b.y + b.speed }))
+      .filter((b) => b.y < canvasHeight);
   };
 
   const checkPlayerHit = () => {
@@ -174,7 +194,15 @@ function App() {
         bullet.y < player.y + player.height &&
         bullet.y + bullet.height > player.y
       ) {
-        setGameState(false);
+        // 弾が当たったら
+        enemyBulletsRefs.current = []; // 全弾消す or 被弾した弾だけ消すなら splice
+        setLives((prevLives) => {
+          const nextLives = prevLives - 1;
+          if (nextLives <= 0) {
+            setGameState(false);
+          }
+          return nextLives;
+        });
         break;
       }
     }
@@ -183,12 +211,13 @@ function App() {
   const drawGame = () => {
     const canvas = canvasRef.current;
     if (!canvas || !ready) return;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (bgImage) {
-      ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+      ctx.drawImage(bgImage, 0, bgY - canvasHeight, canvasWidth, canvasHeight); // 1枚目
+      ctx.drawImage(bgImage, 0, bgY, canvasWidth, canvasHeight); // 2枚目
     }
 
     drawing({ ctx, object: playerRef.current, objectImages: playerImages });
@@ -198,18 +227,31 @@ function App() {
     drawing({ ctx, object: bossRef.current, objectImages: bossFrames });
 
     enemyBulletsRefs.current.forEach((b) => {
-      ctx.fillStyle = 'red';
+      ctx.fillStyle = "red";
       ctx.fillRect(b.x, b.y, b.width, b.height);
     });
   };
 
   return (
-    <div className={styles['display']}>
-      <h1 className={styles['display-score']}>Score: {score}</h1>
-      <h2 className={styles['display-time']}>Time: {(gameTime / 10).toFixed(1)}s</h2>
-      <canvas ref={canvasRef} width={canvasWidth} height={canvasHeight} className={styles['display-canvas']} />
-      <HeartDockn />
-      {!gameState && <div className={styles['gameover']}>GAME OVER</div>}
+    <div className={styles["display"]}>
+      <canvas
+        ref={canvasRef}
+        width={canvasWidth}
+        height={canvasHeight}
+        className={styles["display-canvas"]}
+      />
+      <div className={styles["display-heart-dockn"]}>
+        <HeartDockn />
+      </div>
+      <h1 className={styles["display-score"]}>Score: {score}</h1>
+      <h2 className={styles["display-lives"]}>{"❤".repeat(lives)}</h2>
+      <h2 className={styles["display-time"]}>
+        Time: {(gameTime / 10).toFixed(1)}s
+      </h2>
+
+      {!gameState && lives <= 0 && (
+        <div className={styles["gameover"]}>GAME OVER</div>
+      )}
     </div>
   );
 }

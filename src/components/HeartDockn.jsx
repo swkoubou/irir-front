@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import './HeartDockn.css';
+import React, { useEffect, useRef, useState } from "react";
+// import './HeartDockn.css';
 
 const frameCount = 7;
 const frameDelay = 50; // ms
@@ -36,7 +36,7 @@ const HeartDockn = () => {
 
   const dockn = async () => {
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     for (let i = frameCount - 1; i >= 0; i--) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(imagesRef.current[i], 0, 0, canvas.width, canvas.height);
@@ -75,7 +75,7 @@ const HeartDockn = () => {
   return (
     <div className="heartdockn-container">
       <p>
-        しきい値:{' '}
+        しきい値:{" "}
         <input
           type="range"
           min="1800"
@@ -88,7 +88,12 @@ const HeartDockn = () => {
       </p>
       <button onClick={dockn}>ドックン</button>
       <button onClick={handleMockData}>テスト信号</button>
-      <canvas ref={canvasRef} width="256" height="256" style={{ border: '1px solid #ccc' }} />
+      <canvas
+        ref={canvasRef}
+        width="256"
+        height="256"
+        style={{ border: "1px solid #ccc" }}
+      />
     </div>
   );
 };
