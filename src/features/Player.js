@@ -1,7 +1,7 @@
-const createPlayer = () => {
+const createPlayer = (canvasWidth, canvasHeight) => {
   return {
-    x: 375,
-    y: 500,
+    x: canvasWidth / 2 - 64,
+    y: canvasHeight - 164,
     width: 64,
     height: 64,
     speed: 5,
