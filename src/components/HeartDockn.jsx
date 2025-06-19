@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import './HeartDockn.css';
+//import './HeartDockn.css';
 
 const frameCount = 7;
 const frameDelay = 50; // ms
